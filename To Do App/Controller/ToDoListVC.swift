@@ -85,6 +85,8 @@ class ToDoListVC: UITableViewController {
             
             self.tableView.reloadData()
             
+            //at this point the app WILL crash because we have reached the limits of UserDefaults. We're trying to save to persistence an array of "Item" objects which is not accepted by UserDefaults. Error is "Attempt to insert non-property list object". 
+            
         }
         
         alert.addTextField { (alertTextField) in
