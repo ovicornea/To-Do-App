@@ -13,22 +13,14 @@ import UIKit
 class ToDoListVC: UITableViewController {
     
     var itemArray = [Item]()
-
-    let defaults = UserDefaults.standard
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let newItem = Item()
-        newItem.title = "Ovi"
-        itemArray.append(newItem)
-        
-        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
-
-            itemArray = items
-
-        }
+        loadItems()
         
     }
 
@@ -52,7 +44,7 @@ class ToDoListVC: UITableViewController {
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        tableView.reloadData()
+        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -81,9 +73,7 @@ class ToDoListVC: UITableViewController {
             
             self.itemArray.append(newItem)
             
-            self.defaults.setValue(self.itemArray, forKey: "ToDoListArray")
-            
-            self.tableView.reloadData()
+            self.saveItems()
             
             //at this point the app WILL crash because we have reached the limits of UserDefaults. We're trying to save to persistence an array of "Item" objects which is not accepted by UserDefaults. Error is "Attempt to insert non-property list object". UserDefaults only takes standard datatypes, not custom ones like the one created here.
             
@@ -98,6 +88,38 @@ class ToDoListVC: UITableViewController {
         alert.addAction(action)
         self.present(alert, animated: true, completion: nil)
         
+    }
+    
+    func saveItems() {
+        
+        let encoder = PropertyListEncoder()
+        
+        do {
+            
+            let data = try encoder.encode(itemArray)
+            
+            try data.write(to:dataFilePath!)
+            
+        } catch {
+            
+            print("error encoding itemArray: \(error)")
+            
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func loadItems() {
+            
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("error decoding items")
+            }
+        }
     }
     
 }
