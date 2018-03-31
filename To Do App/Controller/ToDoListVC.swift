@@ -12,7 +12,7 @@ import UIKit
 
 class ToDoListVC: UITableViewController {
     
-    var itemArray = ["Ovi", "Lita", "Jessica", "Aimee", "Ethan"]
+    var itemArray = [Item]()
 
     let defaults = UserDefaults.standard
     
@@ -20,10 +20,14 @@ class ToDoListVC: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
-            
+        let newItem = Item()
+        newItem.title = "Ovi"
+        itemArray.append(newItem)
+        
+        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
+
             itemArray = items
-            
+
         }
         
     }
@@ -32,21 +36,23 @@ class ToDoListVC: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) as UITableViewCell
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.title
+        
+        //ternary operator. set value of cell.accesoryType based on a condition (item.done = true).
+        cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-            
-        } else {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        //if the checkmark property is associated with the cell itself, then when the cell gets reused, the property will "stick".
+        
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -69,7 +75,11 @@ class ToDoListVC: UITableViewController {
             
             //what will happen once the user clicks the Add Item button
             
-            self.itemArray.append(itemToAdd.text!)
+            let newItem = Item()
+            
+            newItem.title = itemToAdd.text!
+            
+            self.itemArray.append(newItem)
             
             self.defaults.setValue(self.itemArray, forKey: "ToDoListArray")
             
