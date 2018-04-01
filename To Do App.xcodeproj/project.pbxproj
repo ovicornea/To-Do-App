@@ -7,15 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C6C5D2220712A7C00EBAC99 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6C5D2120712A7C00EBAC99 /* CategoryViewController.swift */; };
 		8CA21315206E93F9008A3293 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA21314206E93F9008A3293 /* AppDelegate.swift */; };
 		8CA21317206E93F9008A3293 /* ToDoListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA21316206E93F9008A3293 /* ToDoListVC.swift */; };
 		8CA2131A206E93F9008A3293 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CA21318206E93F9008A3293 /* Main.storyboard */; };
 		8CA2131C206E93F9008A3293 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CA2131B206E93F9008A3293 /* Assets.xcassets */; };
 		8CA2131F206E93F9008A3293 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CA2131D206E93F9008A3293 /* LaunchScreen.storyboard */; };
-		8CC3F06A206FA1C3000F3884 /* ItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC3F069206FA1C3000F3884 /* ItemModel.swift */; };
+		8CE19147206FD5D100CB7DC1 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8CE19145206FD5D100CB7DC1 /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C6C5D2120712A7C00EBAC99 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		8CA21311206E93F9008A3293 /* To Do App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "To Do App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CA21314206E93F9008A3293 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8CA21316206E93F9008A3293 /* ToDoListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListVC.swift; sourceTree = "<group>"; };
@@ -23,7 +25,7 @@
 		8CA2131B206E93F9008A3293 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8CA2131E206E93F9008A3293 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8CA21320206E93F9008A3293 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8CC3F069206FA1C3000F3884 /* ItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemModel.swift; sourceTree = "<group>"; };
+		8CE19146206FD5D100CB7DC1 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +71,7 @@
 		8CC3F06B206FA1CA000F3884 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8CC3F069206FA1C3000F3884 /* ItemModel.swift */,
+				8CE19145206FD5D100CB7DC1 /* DataModel.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -77,6 +79,7 @@
 		8CC3F06C206FA1D3000F3884 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				8C6C5D2120712A7C00EBAC99 /* CategoryViewController.swift */,
 				8CA21316206E93F9008A3293 /* ToDoListVC.swift */,
 			);
 			path = Controller;
@@ -126,7 +129,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ovi Cornea";
 				TargetAttributes = {
 					8CA21310206E93F9008A3293 = {
@@ -171,7 +174,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CC3F06A206FA1C3000F3884 /* ItemModel.swift in Sources */,
+				8C6C5D2220712A7C00EBAC99 /* CategoryViewController.swift in Sources */,
+				8CE19147206FD5D100CB7DC1 /* DataModel.xcdatamodeld in Sources */,
 				8CA21317206E93F9008A3293 /* ToDoListVC.swift in Sources */,
 				8CA21315206E93F9008A3293 /* AppDelegate.swift in Sources */,
 			);
@@ -213,6 +217,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -220,6 +225,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -270,6 +276,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -277,6 +284,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -358,6 +366,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8CE19145206FD5D100CB7DC1 /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8CE19146206FD5D100CB7DC1 /* DataModel.xcdatamodel */,
+			);
+			currentVersion = 8CE19146206FD5D100CB7DC1 /* DataModel.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8CA21309206E93F9008A3293 /* Project object */;
 }

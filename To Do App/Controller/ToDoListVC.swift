@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 //by simply inheriting the UITableViewController and adding a TableViewController to the storyboard (after we started as a regular UIViewController app), Xcode adds all the IBOutles, delegate and datasource automatically.
 
@@ -14,16 +15,23 @@ class ToDoListVC: UITableViewController {
     
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    var selectedCategory: Category? {
+        
+        didSet {
+            
+            loadItems()
+        }
+        
+    }
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        loadItems()
-        
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) as UITableViewCell
@@ -56,6 +64,26 @@ class ToDoListVC: UITableViewController {
         
     }
     
+   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    
+        if editingStyle == .delete {
+            
+            self.itemArray.remove(at: indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+            context.delete(itemArray[indexPath.row])
+            
+            do {
+                
+                try context.save()
+                
+            } catch {
+                
+                print("could not save after deleting")
+            }
+        }
+    }
+    
     //MARK: - Add New Items
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -67,15 +95,15 @@ class ToDoListVC: UITableViewController {
             
             //what will happen once the user clicks the Add Item button
             
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             
             newItem.title = itemToAdd.text!
+            newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             
             self.itemArray.append(newItem)
             
             self.saveItems()
-            
-            //at this point the app WILL crash because we have reached the limits of UserDefaults. We're trying to save to persistence an array of "Item" objects which is not accepted by UserDefaults. Error is "Attempt to insert non-property list object". UserDefaults only takes standard datatypes, not custom ones like the one created here.
             
         }
         
@@ -92,34 +120,84 @@ class ToDoListVC: UITableViewController {
     
     func saveItems() {
         
-        let encoder = PropertyListEncoder()
-        
         do {
             
-            let data = try encoder.encode(itemArray)
-            
-            try data.write(to:dataFilePath!)
+            try context.save()
             
         } catch {
             
-            print("error encoding itemArray: \(error)")
-            
+            print("error saving context: \(error)")
         }
         
         self.tableView.reloadData()
     }
     
-    func loadItems() {
+    
+    //with is external parameter, request is internal. the function is also provided with a default value (Item.fetchRequest() in case NSFetchRequest is not provided, like in viewDidLoad.
+    
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+      //  let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
             
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("error decoding items")
-            }
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+            
+        } else {
+            
+            request.predicate = categoryPredicate
         }
+        
+        do {
+            
+            itemArray =  try context.fetch(request)
+            
+        } catch {
+            
+            print("error fetching data from context in searchbar")
+        }
+        
+        tableView.reloadData()
+    }
+    
+   
+    
+}
+
+//MARK: - Searchbar Methods
+
+extension ToDoListVC: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems(with: request, predicate: predicate)
+        
+    }
+    
+//    this method gets trigger ONLY after the text changes.
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0 {
+            
+            loadItems()
+            
+//      user interface elements should be updated in the main thread.
+           
+            DispatchQueue.main.async {
+                
+                searchBar.resignFirstResponder()
+            }
+            
+        }
+        
     }
     
 }
