@@ -13,7 +13,7 @@ class Category: Object {
     
     @objc dynamic var name = ""
     
-    //forward relationship as in CoreData
+    //forward relationship as in CoreData. It specifies that each category can have a number of items.
     
     let items = List<Item>()
     
