@@ -12,6 +12,7 @@ import RealmSwift
 class Category: Object {
     
     @objc dynamic var name = ""
+    @objc dynamic var hexColor = ""
     
     //forward relationship as in CoreData. It specifies that each category can have a number of items.
     

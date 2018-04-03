@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -18,17 +19,28 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.rowHeight = 70                //so the delete-icon can show properly
+        
         loadCategories()
+        
+        tableView.separatorStyle = .none
+       // view.backgroundColor = GradientColor(.topToBottom, frame: CGRect(x: 0, y: 100, width: 100, height: 100) , colors: [.black, .blue])
 
     }
 
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as UITableViewCell
+  
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)  //super takes it to the superclass
         
         cell.textLabel?.text = categoriesArray?[indexPath.row].name ?? "No Categories Added Yet"
         
+        guard let categoryColor = UIColor(hexString: (categoriesArray?[indexPath.row].hexColor)!) else {fatalError()}
+        
+        cell.backgroundColor = categoryColor
+        
+        cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+       
         return cell
     }
     
@@ -88,6 +100,31 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    //MARK: - Delete data from Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        super.updateModel(at: indexPath)    //w/o this, the superclass print statement won't get called, as it will be overridden. 
+        
+        if let item = self.categoriesArray?[indexPath.row] {
+
+        do {
+            
+            try self.realm.write {
+
+                self.realm.delete(item)
+
+            }
+
+        } catch {
+
+            print("error saving done status")
+        }
+
+        }
+        
+    }
+    
     //MARK: - Add New Categories
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -97,9 +134,9 @@ class CategoryViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            
             let newCategory = Category()
             newCategory.name = categoryToAdd.text!
+            newCategory.hexColor = UIColor.randomFlat.hexValue()
             
             // there is no need to append, the Results container is auto-updating
             self.save(category: newCategory)

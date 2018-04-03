@@ -8,13 +8,17 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 //by simply inheriting the UITableViewController and adding a TableViewController to the storyboard (after we started as a regular UIViewController app), Xcode adds all the IBOutles, delegate and datasource automatically.
 
-class ToDoListVC: UITableViewController {
+class ToDoListVC: SwipeTableViewController {
     
     var toDoItems: Results<Item>?
     let realm = try! Realm()
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     
     var selectedCategory: Category? {
         
@@ -28,25 +32,70 @@ class ToDoListVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        tableView.rowHeight = 70
+        tableView.separatorStyle = .none
         
+    
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        guard let colorHex = selectedCategory?.hexColor else { fatalError() }
+            
+            title = selectedCategory?.name
+            
+            guard let navbar = navigationController?.navigationBar else {fatalError("Navigation Controller does not exist")}
+            
+            guard let navBarColor = UIColor(hexString: colorHex) else { fatalError() }
+            
+            navbar.barTintColor = navBarColor
+            
+            navbar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+                
+            navbar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: ContrastColorOf(navBarColor, returnFlat: true)]
+            
+            searchBar.barTintColor = navBarColor
+   
+    }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(true)
+//        
+////       Do this if you want the color of the home view to reset back to an original color. W/o this, the color carries over fromt the previous view.
+//        
+//        guard let originalColor = UIColor(hexString: "1D9BF6") else { fatalError() }
+//        
+//        navigationController?.navigationBar.barTintColor = originalColor
+//        navigationController?.navigationBar.tintColor = FlatWhite()
+//        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : FlatWhite()]
+//        
+//    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) as UITableViewCell
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = toDoItems?[indexPath.row] {
         
-        cell.textLabel?.text = item.title
-        
-        //ternary operator. set value of cell.accesoryType based on a condition (item.done = true).
-        cell.accessoryType = item.done ? .checkmark : .none
+            cell.textLabel?.text = item.title
+            
+            if let color = UIColor(hexString: (selectedCategory!.hexColor))?.darken(byPercentage: CGFloat(indexPath.row)  / CGFloat (toDoItems!.count)) {
+            
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+                
+            }
+    
+            //ternary operator. set value of cell.accesoryType based on a condition (item.done = true).
+            cell.accessoryType = item.done ? .checkmark : .none
        
         } else {
             
             cell.textLabel?.text = "no items added"
             
         }
+        
         return cell
     }
     
@@ -80,29 +129,28 @@ class ToDoListVC: UITableViewController {
         
     }
     
-   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    //MARK: - Delete data from Swipe
     
-        if editingStyle == .delete {
+    override func updateModel(at indexPath: IndexPath) {
+        
+        super.updateModel(at: indexPath)    //w/o this, the superclass print statement won't get called, as it will be overridden.
+        
+        if let item = self.toDoItems?[indexPath.row] {
             
-            if let item = toDoItems?[indexPath.row] {
-                
-                do{
-                    try realm.write {
-                        
-                        realm.delete(item)
-                        self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            do {
+                try self.realm.write {
                     
-                    }
+                    self.realm.delete(item)
                     
-                } catch {
-                    
-                    print("error saving done status")
                 }
-
+                
+            } catch {
+                
+                print("error saving done status")
+            }
             
-    
         }
-    }
+        
     }
     
     //MARK: - Add New Items
